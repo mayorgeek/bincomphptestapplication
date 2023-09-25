@@ -11,4 +11,7 @@ class AnnouncedPollingUnitResult extends Model
 
     protected $table = "announced_pu_results";
 
+    protected $guarded = [];
+    public $timestamps = false;
+
 }

@@ -23,7 +23,7 @@ defineProps({
 });
 
 const form = useForm({
-   lga_uniqueid: 0,
+   lga_uniqueid: null,
 });
 
 const selectedLga = ref('');
@@ -65,7 +65,7 @@ const onChangeSelectedLga = () => {
                         @change="onChangeSelectedLga"
                         class="mt-4 w-full rounded-md border focus:border-blue-500 focus:border-none p-3 text-base font-normal outline-none transition ease-in-out focus:outline-none"
                         id="lgaSelectBox">
-                        <option selected>Select an LGA...</option>
+                        <option selected>Select a LGA...</option>
                         <option v-for="lga in all_lga" :value="lga.uniqueid">{{lga.lga_name}}</option>
                     </select>
                 </div>

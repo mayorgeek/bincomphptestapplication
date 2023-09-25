@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\AnnouncedPollingUnitResult;
 use App\Models\LGA;
-use App\Models\Party;
 use App\Models\PollingUnit;
+use App\Models\Ward;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -26,11 +27,43 @@ class PollingUnitController extends Controller
     }
 
     public function create () {
-        return Inertia::render("PollingUnit/Create");
+        return Inertia::render("PollingUnit/Create", [
+            "wards" => Ward::get(),
+            "all_lga" => LGA::get(),
+        ]);
     }
 
     public function store (Request $request) {
+        $data = $request->validate([
+            'polling_unit_id' => 'required|int',
+            'ward_id' => 'required|int',
+            'lga_id' => 'required|int',
+            'uniquewardid' => 'required|int',
+            'polling_unit_number' => 'required',
+            'polling_unit_name' => 'required',
+            'polling_unit_description' => 'required',
+            'lat' => 'required',
+            'long' => 'required',
+        ]);
 
+        $polling_unit = PollingUnit::create(array_merge($data, [
+            'entered_by_user' => 'Isaac Adepoju',
+            'user_ip_address' => $_SERVER['REMOTE_ADDR'],
+            'date_entered' => Carbon::now()->toDate(),
+        ]));
+
+        foreach ($request->results as $result) {
+            AnnouncedPollingUnitResult::create([
+                'polling_unit_uniqueid' => $polling_unit->id,
+                "party_abbreviation" => $result['party_abbreviation'],
+                'party_score' => $result['party_score'],
+                'entered_by_user' => 'Isaac Adepoju',
+                'user_ip_address' => $_SERVER['REMOTE_ADDR'],
+                'date_entered' => Carbon::now()->toDate(),
+            ]);
+        }
+
+        return redirect()->route('polling_unit.index');
     }
 
     public function sumOfPollingUnitResults(Request $request) {
